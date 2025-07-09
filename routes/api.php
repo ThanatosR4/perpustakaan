@@ -3,6 +3,9 @@
 use App\Http\Controllers\SiswaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\SiswaAuthController;
+use App\Http\Controllers\Api\BukuController;
+use App\Http\Controllers\Api\KategoriController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,19 +20,24 @@ use Illuminate\Support\Facades\Route;
 
 
 
+Route::post('/siswa/register', [SiswaAuthController::class, 'register']);
+Route::post('/siswa/login', [SiswaAuthController::class, 'login']);
 
-Route::post('/siswa/register', [SiswaController::class, 'register']);
+Route::get('/buku', [BukuController::class, 'index']);
 
+Route::get('/kategori', [KategoriController::class, 'index']);
+Route::get('/kategori/{kode}', [KategoriController::class, 'showByKode']);
 
-
-
-
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-
-
-
+// Route::middleware('auth:sanctum')->get('/siswa/profile', function (Request $request) {
+//     return $request->user(); 
+// });
 
 
+Route::middleware('auth:sanctum')->get('/siswa/profile', function () {
+    return response()->json(['siswa' => auth()->user()]);
 });
+
+Route::middleware('auth:sanctum')->get('/siswa/profile', [SiswaController::class, 'getProfile']);
+Route::middleware('auth:sanctum')->post('/siswa/update-profile', [SiswaAuthController::class, 'updateProfile']);
+
+

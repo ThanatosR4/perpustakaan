@@ -19,7 +19,7 @@
                         <h4 style="display: inline-block;">Data Peminjaman Buku</h4>
                         <form action="#" method="GET" class="form-inline">
                             <div class="input-group">
-                                <!-- Pilihan Bulan -->
+                                
                                 <select class="form-control" name="month">
                                     <option value="01">Januari</option>
                                     <option value="02">Februari</option>
@@ -35,7 +35,6 @@
                                     <option value="12">Desember</option>
                                 </select>
                     
-                                <!-- Pilihan Tahun -->
                                 <select class="form-control" name="year">
                                     @php
                                     $currentYear = date('Y');
@@ -45,13 +44,13 @@
                                     @endfor
                                 </select>
                     
-                                <!-- Tombol Cari -->
+                                
                                 <div class="input-group-btn">
                                     <button class="btn btn-primary" type="submit">Cari</button>
                                 </div>
                             </div>
                     
-                            <!-- Tombol Refresh dan Print -->
+                           
                             <div class="input-group ml-3">
                                 <button class="btn btn-success" type="button" onclick="window.location.reload();">Refresh</button>
                                 <button class="btn btn-info ml-2" type="button" onclick="window.print();">Print</button>
@@ -64,33 +63,44 @@
                               <thead>
                                   <tr>
                                       <th style="width: 5%">No.</th>
-                                      <th>No Pinjam</th>
                                       <th>NISN</th>
                                       <th>Nama</th>
-                                      <th>Pinjam</th>
-                                      <th>Balik</th>
-                                      <th>Dipinjam</th>
+                                      <th>Keterangan</th>
+                                      <th>Status</th>
+                                      <th>Tanggal Pinjam</th>
+                                      <th>Lama Pinjam</th>
                                       <th>Denda</th>
-                                      <th style="width: 19%">Aksi</th>
+                                      <th style="width: 20%">Aksi</th>
                                   </tr>
                               </thead>
         
                               <tbody>
+                                @foreach ($pinjaman as $item)
                                 <tr>
-                                    <td>12</td>
-                                        <td>1</td>
-                                        <td>asdas</td>
-                                        <td>12</td>
-                                        <td>3</td>
-                                        <td>321</td>
-                                        <td>3123</td>
-                                        <td>3123</td>
+                                    <td>1</td>
+                                        <td>{{$item->siswa_id}}</td>
+                                        <td>{{$item->nama}}</td>
+                                        <td>{{$item->keterangan}}</td>
+                                        <td>
+                                            @if ($item->status === 'belum kembali')
+                                                <span class="badge badge-danger">Belum Dikembalikan</span>
+                                            @elseif ($item->status === 'sudah kembali')
+                                                <span class="badge badge-success">Sudah Dikembalikan</span>
+                                            @else
+                                                <span class="badge badge-secondary">Status Tidak Diketahui</span>
+                                            @endif
+                                        </td>
+
+                                        <td>{{$item->tanggal_pinjam}}</td>
+                                        <td>{{$item->lama_pinjam}}</td>
+                                        <td>5000</td>
                                         <td>
                                             <button class="btn btn-success btn-sm">Dikembalikan</button>
                                             <button class="btn btn-info btn-sm">Detail</button>
                                             <button class="btn btn-danger btn-sm">Hapus</button>
                                         </td>
                                 </tr>
+                                @endforeach
                               </tbody>
                           </table>                     
                       </div>

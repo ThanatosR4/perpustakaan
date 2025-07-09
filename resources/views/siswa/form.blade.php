@@ -20,6 +20,25 @@
                 <input type="text" name="nama" id="nama" class="form-control">
             </div>
 
+            <div class="form-group" style="margin-bottom: 15px; position: relative;">
+              <label for="password">Password</label>
+              <input type="password" name="password" id="password" class="form-control">
+              <span id="togglePassword" style="position: absolute; right: 15px; top: 35px; cursor: pointer;">
+                  &#128065;
+              </span>
+          </div>
+          
+          <div class="form-group" style="margin-bottom: 15px; position: relative;">
+              <label for="password_confirmation">Konfirmasi Password</label>
+              <input type="password" name="password_confirmation" id="password_confirmation" class="form-control">
+              <span id="togglePasswordConfirmation" style="position: absolute; right: 15px; top: 35px; cursor: pointer;">
+                  &#128065;
+              </span>
+              <span id="password-match-icon" style="position: absolute; right: 35px; top: 35px; color: red; display: none;">&#10006;</span>
+          </div>
+          
+          
+
             <div class="form-group" style="margin-bottom: 15px;">
                 <label for="kelas">Kelas</label>
                 <select name="kelas" id="kelas" class="form-control">
@@ -99,3 +118,55 @@
       </div>
     </div>
   </div>
+
+  <script>
+    const passwordField = document.getElementById('password');
+    const passwordConfirmationField = document.getElementById('password_confirmation');
+    const togglePassword = document.getElementById('togglePassword');
+    const togglePasswordConfirmation = document.getElementById('togglePasswordConfirmation');
+    const passwordMatchIcon = document.getElementById('password-match-icon');
+
+    togglePassword.addEventListener('click', function() {
+        // Toggle password visibility
+        const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordField.setAttribute('type', type);
+        
+        // Toggle icon (optional: change icon here if needed)
+        this.innerHTML = type === 'password' ? '&#128065;' : '&#128065;'; // You can replace with different icons
+    });
+
+    togglePasswordConfirmation.addEventListener('click', function() {
+        // Toggle password confirmation visibility
+        const type = passwordConfirmationField.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordConfirmationField.setAttribute('type', type);
+        
+        // Toggle icon (optional: change icon here if needed)
+        this.innerHTML = type === 'password' ? '&#128065;' : '&#128065;'; // You can replace with different icons
+    });
+
+    passwordConfirmationField.addEventListener('input', function() {
+        if (passwordField.value !== passwordConfirmationField.value) {
+            passwordMatchIcon.style.display = 'inline';
+        } else {
+            passwordMatchIcon.style.display = 'none';
+        }
+    });
+</script>
+
+
+<style>
+  #togglePassword, #togglePasswordConfirmation {
+      position: absolute;
+      right: 15px;
+      top: 35px;
+      cursor: pointer;
+      font-size: 18px;
+  }
+
+  #password-match-icon {
+      position: absolute;
+      right: 35px; /* Adjusted to make room for the toggle icon */
+      top: 35px;
+      font-size: 18px;
+  }
+</style>

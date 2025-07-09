@@ -5,18 +5,41 @@ namespace App\Http\Controllers;
 use App\Models\Buku;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use App\Models\Kategori;
 
 class BukuController extends Controller
 {
-    function index()
-    {
-        $buku = Buku::all();
-        return view('buku.index', compact('buku'));
+   function index(Request $request)
+{
+    $kategori_id = $request->kategori_id;
+    $keyword = $request->keyword;
+
+    // Query dasar: ambil relasi kategori juga
+    $query = Buku::with('kategori');
+
+    // Jika filter kategori dipilih
+    if ($kategori_id) {
+        $query->where('kategori_id', $kategori_id);
     }
+
+    // Jika ada pencarian keyword
+    if ($keyword) {
+        $query->where('judul', 'like', '%' . $keyword . '%');
+    }
+
+    // Ambil hasil query
+    $buku = $query->get();
+
+    // Ambil semua kategori untuk filter
+    $kategori = Kategori::all();
+
+    return view('buku.index', compact('buku', 'kategori'));
+}
 
     function tambahbuku()
     {
-        return view('buku.tambahbuku');
+    $kategori = Kategori::all(); // Ambil semua kategori dari tabel
+    return view('buku.tambahbuku', compact('kategori')); // Kirim ke view
     }
 
     function store(Request $request)
@@ -35,6 +58,7 @@ class BukuController extends Controller
             'judul' => $request->judul,
             'isbn' => $request->isbn,
             'pengarang' => $request->pengarang,
+            'penerbit_id' => $request->penerbit_id,
             'jumlah_halaman' => $request->jumlah_halaman,
             'stok' => $request->stok,
             'tahun_terbit' => $request->tahun_terbit,
@@ -48,11 +72,11 @@ class BukuController extends Controller
     }
 
     function detail($id)
-    {
-        $buku = Buku::find($id);
+{
+    $buku = Buku::with(['kategori'])->find($id);
+    return view('buku.detail', compact('buku'));
+}
 
-        return view('buku.detail', compact('buku'));
-    }
 
     public function destroy($id)
 {

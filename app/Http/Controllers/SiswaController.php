@@ -36,6 +36,8 @@ class SiswaController extends Controller
 
         $fotoPath = $foto->move('images/siswa/', $new_foto);
 
+        $password = Hash::make($request->password);
+
         Siswa::create([
 
             'kode' => $request->kode,
@@ -47,7 +49,7 @@ class SiswaController extends Controller
             'telepon' => $request->telepon,
             'email' => $request->email,
             'alamat' => $request->alamat,
-            'password' =>$request->password,
+            'password' =>$password,
             'foto'=> $fotoPath,
 
         ]);

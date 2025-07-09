@@ -9,6 +9,27 @@
             <h4>Buku</h4>
             <a href="/buku/tambahbuku" class="btn btn-md btn-success" type="button">Tambah Buku</a>
         </div>
+            <form action="{{ url('/buku') }}" method="GET" class="mb-4">
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="text" name="keyword" class="form-control" placeholder="Cari berdasarkan judul..." value="{{ request('keyword') }}">
+                    </div>
+                    <div class="col-md-4">
+                        <select name="kategori_id" class="form-control">
+                            <option value="">-- Semua Kategori --</option>
+                            @foreach ($kategori as $kat)
+                                <option value="{{ $kat->id }}" {{ request('kategori_id') == $kat->id ? 'selected' : '' }}>
+                                    {{ $kat->kode }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <a href="{{ url('/buku') }}" class="btn btn-secondary">Reset</a>
+                    </div>
+                </div>
+            </form>
 
         <div class="section-body">
             <div class="container">
@@ -56,16 +77,21 @@
     }
 
     .card-body {
-        position: absolute;
-        bottom: -100%;
-        left: 0;
-        width: 100%;
-        background: rgba(255, 255, 255, 0.5); /* White background with 50% opacity */
-        color: #000; /* Change text color to black for better readability */
-        transition: bottom 0.3s ease-in-out, opacity 0.3s ease-in-out;
-        opacity: 0;
-        padding: 10px;
+    position: absolute;
+    bottom: -100%;
+    left: 0;
+    width: 100%;
+    background-color: #000000; /* warna solid hitam */
+    color: #fff; /* warna teks putih */
+    transition: bottom 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    opacity: 0;
+    padding: 15px;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
+  
+
+
 
     .card:hover .card-body {
         bottom: 0;

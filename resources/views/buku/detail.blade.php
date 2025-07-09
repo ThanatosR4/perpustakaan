@@ -57,9 +57,12 @@
                                             <div id="pengarang" class="form-control" style="font-size: 16px;">{{$buku->pengarang}}</div>
                                         </div>
                                         <div class="form-group" style="margin-bottom: 15px;">
-                                            <label for="kode" style="font-size: 18px;">Kode</label>
-                                            <div id="kode" class="form-control" style="font-size: 16px;">{{$buku->kode}}</div>
+                                            <label for="kategori" style="font-size: 18px;">Kategori</label>
+                                            <div id="kategori" class="form-control" style="font-size: 16px;">
+                                                {{ $buku->kategori->kode ?? 'Tidak ada kategori' }}
+                                            </div>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -92,8 +95,8 @@
                         </div>
                     
                         <div class="d-flex justify-content-between" style="margin-top: 10px;">
-                            <button class="btn btn-sm btn-warning" style="font-size: 12px;" type="submit">Edit</button>
-                            <button class="btn btn-sm btn-secondary" style="font-size: 12px;" type="button" onclick="history.back()">Batal</button>
+                            <button class="btn btn-sm btn-warning" style="font-size: 17px;" type="submit">Edit</button>
+                            <button class="btn btn-sm btn-secondary" style="font-size: 17px;" type="button" onclick="history.back()">Batal</button>
                         </div>
                     </form>
 

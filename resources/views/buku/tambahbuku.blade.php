@@ -19,9 +19,14 @@
                                 <label for="nama" style="font-size: 18px;">Judul</label>
                                 <input type="text" name="judul" id="judul" class="form-control" style="font-size: 16px; height: auto;">
                             </div>
-                            <div class="from-group" style="margin-bottom: 15px;">
-                                <label for="nama" style="font-size: 18px;">Kode</label>
-                                <input type="text" name="kode" id="kode" class="form-control" style="font-size: 16px; height: auto;">
+                            <div class="form-group" style="margin-bottom: 15px;">
+                            <label for="kategori_id" style="font-size: 18px;">Kode</label>
+                            <select name="kategori_id" id="kategori_id" class="form-control" style="font-size: 16px;" onchange="setKode()">
+                                <option value="" disabled selected>Pilih Kategori</option>
+                                @foreach ($kategori as $k)
+                                    <option value="{{ $k->id }}" data-kode="{{ $k->nama }}">{{ $k->kode }}</option>
+                                @endforeach
+                            </select>
                             </div>
                             <div class="from-group" style="margin-bottom: 15px;">
                                 <label for="nama" style="font-size: 18px;">ISBN</label>
@@ -32,6 +37,11 @@
                                 <label for="nama" style="font-size: 18px;">Pengarang</label>
                                 <input type="text" name="pengarang" id="pengarang" class="form-control" style="font-size: 16px; height: auto;">
                             </div>
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label for="nama" style="font-size: 18px;">Penerbit</label>
+                                <input type="text" name="penerbit_id" id="penerbit_id" class="form-control" style="font-size: 16px; height: auto;">
+                            </div>
+
 
                             <div class="from-group" style="margin-bottom: 15px;">
                                 <label for="nama" style="font-size: 18px;">Jumlah Halaman</label>
@@ -59,7 +69,6 @@
                                        accept="image/*" onchange="document.getElementById('output').src = window.URL.createObjectURL(this.files[0])">
                             </div>
                             
-                            <!-- Tambahkan elemen gambar untuk menampilkan pratinjau -->
                             <img id="output" src="" style="margin-top: 15px; max-width: 200px; max-height: 200px; height: auto;">
                             
                            
@@ -75,6 +84,7 @@
     </section>
 </div>
 @endsection
+
 
 
 

@@ -51,6 +51,11 @@ class KategoriController extends Controller
 
         return redirect('kategori')->with('sukses', 'Data berhasil dihapus');
     }
-   
-   
+    
+    function tambahbuku()
+    {
+    $kategori = Kategori::all();
+    return view('buku.tambahbuku', compact('kategori'));
+    }   
+
 }

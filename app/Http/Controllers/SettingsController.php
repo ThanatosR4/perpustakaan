@@ -2,80 +2,60 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 class SettingsController extends Controller
 {
-    function index()
+    public function edit()
     {
-        return view('settings.index');
+        $user = Auth::user();
+        return view('settings.index', compact('user'));
     }
 
-    function akun($id)
+    public function update(Request $request, $id)
     {
-        $user = User::find($id);
+        $user = User::findOrFail($id);
 
-        if (!$user) {
-            abort(404); // User tidak ditemukan
-        }
-
-        return view('settings.akun', compact('user'));
-    }
-
-    function update(Request $request, $id)
-    {
-        $user = User::find($id);
-
-        if (!$user) {
-            abort(404); // User tidak ditemukan
-        }
-
-        // Validasi input
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
-            'old_password' => 'nullable|string',
-            'new_password' => 'nullable|string|min:8|confirmed',
-            'foto' => 'nullable|image|max:1024',
-            'description' => 'nullable|string|max:1000', 
+            'name' => 'required|string|max:100',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'foto' => 'nullable|image|max:1024', 
+            'new_password' => 'nullable|min:6|same:confirm_password',
         ]);
 
-        if($request->hasFile('foto')){
-            // Menghapus foto lama jika ada
-            if($user->foto){
-                File::delete($user->foto);
-            }
-    
-            // Mengunggah dan menyimpan foto baru
-            $foto = $request->file('foto');
-            $slug = '.' . $foto->getClientOriginalExtension();
-            $new_foto = time() . $slug;
-            $fotoPath = $foto->move('images/user/', $new_foto);
-            $user->foto = 'images/user/' . $new_foto;
-        }
-        
-        
-
-        // Update nama dan email
         $user->name = $request->name;
         $user->email = $request->email;
         $user->description = $request->description;
 
-        // Jika password diisi, cek old password dan update password
-        if ($request->filled('old_password') && $request->filled('new_password')) {
-            if (Hash::check($request->old_password, $user->password)) {
+        
+        if ($request->hasFile('foto')) {
+            if ($user->foto && Storage::exists('public/' . $user->foto)) {
+                Storage::delete('public/' . $user->foto);
+            }
+
+            $foto = $request->file('foto');
+            $filename = time() . '_' . $foto->getClientOriginalName();
+            $foto->storeAs('public/images/user', $filename);
+            $user->foto = 'images/user/' . $filename;
+        }
+
+        
+        if ($request->filled('old_password')) {
+            if (!Hash::check($request->old_password, $user->password)) {
+                return back()->withErrors(['old_password' => 'Password lama salah.']);
+            }
+
+            if ($request->new_password) {
                 $user->password = Hash::make($request->new_password);
-            } else {
-                return back()->withErrors(['old_password' => 'Old password does not match']);
             }
         }
 
         $user->save();
 
-        return redirect()->route('settings.akun', $user->id)->with('success', 'Pengaturan berhasil diperbarui');
+        return redirect()->route('settings.edit')->with('success', 'Pengaturan akun berhasil diperbarui.');
     }
-
 }

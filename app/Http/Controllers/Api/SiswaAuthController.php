@@ -7,6 +7,7 @@ use App\Models\Siswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 
 class SiswaAuthController extends Controller
@@ -52,12 +53,14 @@ class SiswaAuthController extends Controller
     }
     public function updateProfile(Request $request)
     {
-    $user = auth()->user(); // siswa yang sedang login
+     /** @var Siswa $user */
+    $user = auth()->user(); 
 
     $request->validate([
         'nama' => 'required',
         'email' => 'required|email|unique:siswa,email,' . $user->id,
         'jenis_kelamin' => 'nullable',
+        'kelas' => 'nullable',
         'tempat_lahir' => 'nullable',
         'tanggal_lahir' => 'nullable|date',
         'telepon' => 'nullable',
@@ -65,7 +68,7 @@ class SiswaAuthController extends Controller
         'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
     ]);
 
-    $data = $request->except('foto'); // ambil semua data kecuali foto
+    $data = $request->except('foto'); 
 
     if ($request->hasFile('foto')) {
         $foto = $request->file('foto');
@@ -73,14 +76,14 @@ class SiswaAuthController extends Controller
         $data['foto'] = $fotoPath;
     }
 
-    $user->update($data); // langsung update dengan data yang sudah diolah
+    $user->update($data); 
 
     return response()->json([
         'message' => 'Profil berhasil diperbarui',
         'siswa' => $user
     ]);
     }
-    public function getProfile()
+   public function getProfile()
     {
     $user = auth()->user();
 
@@ -89,6 +92,34 @@ class SiswaAuthController extends Controller
         'siswa' => $user,
     ]);
     }
+   public function ubahPassword(Request $request)
+    {
+        
+        $user = Siswa::find(auth()->id());
+
+        
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:6|confirmed', 
+        ]);
+
+       
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'message' => 'Password lama salah'
+            ], 400);
+        }
+
+        
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return response()->json([
+            'message' => 'Password berhasil diubah'
+        ]);
+}
+
+
 
 
 

@@ -10,9 +10,13 @@
         <div class="modal-body">
           <form action="/siswa/store" method="POST" enctype="multipart/form-data">
             @csrf
-            <div class="from-group" style="margin-bottom: 15px;">
+            <div class="form-group" style="margin-bottom: 15px;">
                 <label for="kode">NISN</label>
-                <input type="text" name="kode" id="kode" class="form-control">
+                <input type="number" name="kode" id="kode" class="form-control @error('kode') is-invalid @enderror"
+                    value="{{ old('kode') }}" @error('kode') autofocus @enderror>
+                @error('kode')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="from-group" style="margin-bottom: 15px;">
@@ -70,7 +74,7 @@
 
             <div class="from-group" style="margin-bottom: 15px;">
                 <label for="nama">Telepon/No HP</label>
-                <input type="text" name="telepon" id="telepon" class="form-control">
+                <input type="number" name="telepon" id="telepon" class="form-control">
             </div>
 
             <div class="from-group" style="margin-bottom: 15px;">
@@ -170,3 +174,11 @@
       font-size: 18px;
   }
 </style>
+
+@if ($errors->any())
+<script>
+    $(document).ready(function() {
+        $('#modal-tambah').modal('show');
+    });
+</script>
+@endif

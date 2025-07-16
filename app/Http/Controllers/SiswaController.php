@@ -11,30 +11,59 @@ use Illuminate\Support\Facades\Validator;
 
 class SiswaController extends Controller
 {
-    function index(Request $request)
+    public function index(Request $request)
     {
-        $search = $request->input('search');
-        
-        if ($search) {
-            $siswa = Siswa::where('nama', 'like', '%' . $search . '%')->orderBy('nama')->paginate(10);
-        } else {
-            $siswa = Siswa::orderBy('nama')->paginate(10);
-        }
+    $search = $request->input('search');
+    $kelas = $request->input('kelas');
 
-        return view('siswa.index', compact('siswa'));
+    $query = Siswa::query();
+
+    if ($kelas) {
+        $query->where('kelas', $kelas);
+    }
+
+    if ($search) {
+        $query->where(function ($q) use ($search) {
+            $q->where('nama', 'like', '%' . $search . '%');
+        });
+    }
+
+     $query->orderByRaw("FIELD(kelas, 'XII', 'XI', 'X')")
+          ->orderBy('nama', 'asc');
+
+    $siswa = $query->orderBy('nama')->paginate(10)->withQueryString();
+
+    return view('siswa.index', compact('siswa'));
     }
 
     function store(Request $request)
     {
-        // Siswa::create($request->all());
-        
-
+    
+        $request->validate([
+        'kode' => 'required|unique:siswa,kode',
+        'nama' => 'required|string',
+        'password' => 'required|confirmed|min:6',
+        'kelas' => 'required',
+        'jenis_kelamin' => 'required|in:L,P',
+        'tempat_lahir' => 'required|string',
+        'tanggal_lahir' => 'required|date',
+        'telepon' => 'required|numeric',
+        'email' => 'required|email',
+        'alamat' => 'required|string',
+        'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ], [
+        'kode.required' => 'NISN wajib diisi.',
+        'kode.unique' => 'NISN sudah terdaftar.',]
+    );
 
         $foto = $request->foto;
         $slug = (".".$foto->getClientOriginalExtension());
         $new_foto = time() . $slug;
 
-        $fotoPath = $foto->move('images/siswa/', $new_foto);
+        $foto->storeAs('public/images/siswa', $new_foto);
+        $fotoPath = 'images/siswa/' . $new_foto; 
+
+        
 
         $password = Hash::make($request->password);
 
@@ -68,16 +97,14 @@ class SiswaController extends Controller
     {
         $siswa = Siswa::find($id);
 
-        if($request->hasFile('foto')){
-            File::delete($siswa->foto);
+        if ($request->hasFile('foto')) {
+            File::delete('storage/' . $siswa->foto); 
             $foto = $request->foto;
-            $slug = (".".$foto->getClientOriginalExtension());
+            $slug = "." . $foto->getClientOriginalExtension();
             $new_foto = time() . $slug;
-            $fotoPath = $foto->move('images/siswa/', $new_foto);
-            $fotoPath = 'images/siswa/' .$new_foto;
-            $siswa->foto = $fotoPath;
-
-        }
+            $foto->storeAs('public/images/siswa', $new_foto);
+            $siswa->foto = 'images/siswa/' . $new_foto;
+            }
         
 
         $siswa->kode = $request->kode;
@@ -98,7 +125,7 @@ class SiswaController extends Controller
     function destroy($id)
     {
         $siswa = Siswa::find($id);
-        File::delete($siswa->foto);
+        File::delete('storage/' . $siswa->foto); 
         $siswa->delete();
 
         return redirect('siswa')->with('sukses', 'Data berhasil dihapus');
@@ -106,36 +133,46 @@ class SiswaController extends Controller
     
 
 
-    public function register(Request $request)
+    // public function register(Request $request)
+    // {
+        
+    //     $validator = Validator::make($request->all(), [
+    //         'kode' => 'required',
+    //         'nama' => 'required',
+    //         'email' => 'required|email',
+    //         'kelas' => 'required',
+    //         'password' => 'required',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return response()->json($validator->errors());
+    //     }
+
+    //     $siswa = Siswa::create([
+    //         'kode' => $request->kode,
+    //         'nama' => $request->nama,
+    //         'kelas' => $request->kelas,
+    //         'jenis_kelamin' => $request->jenis_kelamin,
+    //         'tempat_lahir' => $request->tempat_lahir,
+    //         'tanggal_lahir' => $request->tanggal_lahir,
+    //         'telepon' => $request->telepon,
+    //         'email' => $request->email,
+    //         'alamat' => $request->alamat,
+    //         'password' => Hash::make($request->password), 
+    //     ]);
+
+    //     return response()->json(['message' => 'Siswa berhasil didaftarkan', 'data' => $siswa], 201);
+    // }
+
+    public function resetPassword($id)
     {
-        // Validasi input dari request
-        $validator = Validator::make($request->all(), [
-            'kode' => 'required',
-            'nama' => 'required',
-            'email' => 'required|email',
-            'kelas' => 'required',
-            'password' => 'required',
-        ]);
+    $siswa = Siswa::findOrFail($id);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors());
-        }
+    $defaultPassword = 'password123'; // Password baru yang direset
+    $siswa->password = Hash::make($defaultPassword);
+    $siswa->save();
 
-        // Membuat data siswa baru
-        $siswa = Siswa::create([
-            'kode' => $request->kode,
-            'nama' => $request->nama,
-            'kelas' => $request->kelas,
-            'jenis_kelamin' => $request->jenis_kelamin,
-            'tempat_lahir' => $request->tempat_lahir,
-            'tanggal_lahir' => $request->tanggal_lahir,
-            'telepon' => $request->telepon,
-            'email' => $request->email,
-            'alamat' => $request->alamat,
-            'password' => Hash::make($request->password), // Hashing password untuk keamanan
-        ]);
-
-        return response()->json(['message' => 'Siswa berhasil didaftarkan', 'data' => $siswa], 201);
+    return redirect()->back()->with('sukses', "Password berhasil direset menjadi: $defaultPassword");
     }
 
 }

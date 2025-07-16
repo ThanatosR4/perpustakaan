@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\SiswaAuthController;
 use App\Http\Controllers\Api\BukuController;
 use App\Http\Controllers\Api\KategoriController;
+use App\Http\Controllers\API\PeminjamanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,11 +34,10 @@ Route::get('/kategori/{kode}', [KategoriController::class, 'showByKode']);
 // });
 
 
-Route::middleware('auth:sanctum')->get('/siswa/profile', function () {
-    return response()->json(['siswa' => auth()->user()]);
-});
-
-Route::middleware('auth:sanctum')->get('/siswa/profile', [SiswaController::class, 'getProfile']);
-Route::middleware('auth:sanctum')->post('/siswa/update-profile', [SiswaAuthController::class, 'updateProfile']);
+Route::middleware('auth:sanctum')->get('/siswa/profile', [SiswaAuthController::class, 'getProfile']);
+Route::middleware('auth:sanctum')->post('/siswa/update', [SiswaAuthController::class, 'updateProfile']);
+Route::middleware('auth:sanctum')->post('/siswa/ubah-password', [SiswaAuthController::class, 'ubahPassword']);
 
 
+Route::middleware('auth:sanctum')->post('/siswa/peminjaman', [PeminjamanController::class, 'store']);
+Route::middleware('auth:sanctum')->get('/siswa/peminjaman', [PeminjamanController::class, 'index']);

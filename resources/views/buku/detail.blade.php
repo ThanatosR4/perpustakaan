@@ -35,7 +35,7 @@
                                                    accept="image/*" onchange="document.getElementById('output').src = window.URL.createObjectURL(this.files[0])">
                                         </div> --}}
                                         <!-- Display the preview image -->
-                                        <img id="output" src="{{asset($buku->gambar)}}" class="img-fluid" style="margin-top: 15px; max-width: 100%; max-height: 400px;">
+                                        <img id="output" src="{{ asset('storage/' . $buku->gambar) }}" class="img-fluid">
                                     </div>
                                 </div>
                             </div>
@@ -95,7 +95,10 @@
                         </div>
                     
                         <div class="d-flex justify-content-between" style="margin-top: 10px;">
-                            <button class="btn btn-sm btn-warning" style="font-size: 17px;" type="submit">Edit</button>
+                        <a href="{{ route('buku.edit', $buku->id) }}" class="btn btn-sm btn-warning" style="font-size: 17px;">
+                            Edit
+                        </a>
+
                             <button class="btn btn-sm btn-secondary" style="font-size: 17px;" type="button" onclick="history.back()">Batal</button>
                         </div>
                     </form>

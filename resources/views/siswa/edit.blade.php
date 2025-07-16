@@ -81,7 +81,11 @@
                     </div>
                     
                     <!-- Tambahkan elemen gambar untuk menampilkan pratinjau -->
-                    <img id="output" src="{{asset($siswa->foto)}}" style="margin-top: 15px; max-width: 200px; max-height: 200px; height: auto;">
+                    <img id="output" 
+                        src="{{ $siswa->foto ? asset('storage/' . $siswa->foto) : asset('images/default-avatar.png') }}" 
+                        style="margin-top: 15px; max-width: 200px; max-height: 200px; height: auto;" 
+                        alt="Foto Siswa">
+
 
         
                     {{-- <div class="from-group">

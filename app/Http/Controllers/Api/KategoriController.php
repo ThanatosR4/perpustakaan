@@ -10,12 +10,13 @@ class KategoriController extends Controller
 {
     public function index()
     {
-        $kategori = Kategori::with('buku')->get();
+    $kategori = Kategori::select('kode')->get();
 
-        return response()->json([
-            'kategori' => $kategori
-        ]);
+    return response()->json([
+        'data' => $kategori
+    ]);
     }
+
 
     public function showByKode($kode)
     {

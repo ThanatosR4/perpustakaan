@@ -18,6 +18,11 @@ return [
         'passwords' => 'users',
     ],
 
+    'siswa' => [
+        'driver' => 'sanctum',
+        'provider' => 'siswa',
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Guards
@@ -64,7 +69,10 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-
+        'siswa' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\Siswa::class,
+        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
